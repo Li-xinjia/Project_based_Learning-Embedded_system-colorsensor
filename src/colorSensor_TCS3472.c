@@ -81,7 +81,7 @@ void initColorSensor(tcs34725IntegrationTime_t it,tcs34725Gain_t ga) {
     write8ColorSensor(ENABLE_REG, ENABLE_PON);  //PON=1
     delay_ms(3);
     write8ColorSensor(ENABLE_REG, ENABLE_PON | ENABLE_AEN); //AEN=1, PON=1
-    delay_ms(3);
-    setIntThresholdColorSensor(0x0000,0x5000);
+//    delay_ms(3);
+//    setIntThresholdColorSensor(0x0000,0x5000);
 
 }

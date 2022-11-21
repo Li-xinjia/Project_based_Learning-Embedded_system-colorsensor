@@ -141,9 +141,6 @@ int main(void) {
     initConsole();
     UARTprintf("Color sensor example\n");
 
-    // Set up interrupts (you can specify GPIO interrupt initialization here)
-    initInterruptPins();
-
     // Initialize buzzer
     initBuzzer();
 
@@ -160,8 +157,32 @@ int main(void) {
     SysTickIntRegister(SysTickIntHandler);
     SysTickIntEnable();
 
-//    setAddressLCD(0, 0);
-//    writeTextLCD("CLEAR DATA:", 11);
+    clearLCD();
+    delay_ms(3);
+
+    setAddressLCD(0, 0);
+    writeTextLCD("Check SW1 to", 12);
+    setAddressLCD(0, 1);
+    writeTextLCD("initiate", 8);
+
+    while (GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_4));
+    static uint32_t Threshold;
+    for (int i = 0; i < 10; ++i) {
+        Threshold += read16ColorSensor(CDATAL_REG);
+        delay_ms(100);
+    }
+    Threshold = Threshold / 10;
+    UARTprintf("%04x\n", (uint16_t) (Threshold & 0xffff )+ 0x2000);
+    clearLCD();
+
+    setAddressLCD(0, 0);
+    writeTextLCD("Initiate over", 13);
+    delay_ms(3);
+    setIntThresholdColorSensor(0x0000, (uint16_t) (Threshold & 0xffff) + 0x2000);
+    clearIntColorSensor();
+
+    // Set up interrupts (you can specify GPIO interrupt initialization here)
+    initInterruptPins();
 
 
     while (1) {
