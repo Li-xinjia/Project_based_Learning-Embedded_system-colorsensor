@@ -34,6 +34,7 @@
 #include "buzzer.h"
 #include "colorSensor_TCS3472.h"
 #include "lcd_SB1602.h"
+#include "rotaryEncoder.h"
 
 //*****************************************************************************
 //
@@ -83,40 +84,48 @@ void SysTickIntHandler(void) {
     }
 
     setAddressLCD(0, 0);
-    switch (statue.nowColor) {
+    switch (statue.selectColor) {
         case RED:
             writeTextLCD("RED   ", 6);
+            break;
         case GREEN:
             writeTextLCD("GREEN ", 6);
+            break;
         case BLUE:
             writeTextLCD("BLUE  ", 6);
+            break;
         case YELLOW:
             writeTextLCD("YELLOW", 6);
+            break;
     }
 
     setAddressLCD(0, 1);
     switch (statue.nowColor) {
         case RED:
             writeTextLCD("RED   ", 6);
+            break;
         case GREEN:
             writeTextLCD("GREEN ", 6);
+            break;
         case BLUE:
             writeTextLCD("BLUE  ", 6);
+            break;
         case YELLOW:
             writeTextLCD("YELLOW", 6);
+            break;
     }
 
-    setAddressLCD(10,0);
-    writeTextLCD(itoa(statue.rTimes,2),2);
+    setAddressLCD(10, 0);
+    writeTextLCD(itoa(statue.rTimes, 2), 2);
 
-    setAddressLCD(14,0);
-    writeTextLCD(itoa(statue.yTimes,2),2);
+    setAddressLCD(14, 0);
+    writeTextLCD(itoa(statue.yTimes, 2), 2);
 
-    setAddressLCD(10,1);
-    writeTextLCD(itoa(statue.gTimes,2),2);
+    setAddressLCD(10, 1);
+    writeTextLCD(itoa(statue.gTimes, 2), 2);
 
-    setAddressLCD(14,1);
-    writeTextLCD(itoa(statue.bTimes,2),2);
+    setAddressLCD(14, 1);
+    writeTextLCD(itoa(statue.bTimes, 2), 2);
 
     tick_count++;
 }
@@ -136,11 +145,11 @@ void PB1PinIntHandler(void) {
     data_green = read16ColorSensor(GDATAL_REG);
     data_clear = read16ColorSensor(CDATAL_REG);
 
-    if (data_red > RED_VALUE_R-RED_RANG || data_red < RED_VALUE_R+RED_RANG) {
-        if (data_blue > RED_VALUE_B-RED_RANG || data_blue < RED_VALUE_B+RED_RANG) {
-            if (data_green > RED_VALUE_G-RED_RANG || data_red < RED_VALUE_G+RED_RANG) {
+    if (data_red > RED_VALUE_R - RED_RANG || data_red < RED_VALUE_R + RED_RANG) {
+        if (data_blue > RED_VALUE_B - RED_RANG || data_blue < RED_VALUE_B + RED_RANG) {
+            if (data_green > RED_VALUE_G - RED_RANG || data_red < RED_VALUE_G + RED_RANG) {
                 statue.nowColor = RED;
-                statue.rTimes+=1;
+                statue.rTimes += 1;
                 delay_ms(1000);
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -149,11 +158,11 @@ void PB1PinIntHandler(void) {
         }
     }
 
-    if (data_red > BLUE_VALUE_R-BLUE_RANG || data_red < BLUE_VALUE_R+BLUE_RANG) {
-        if (data_blue > BLUE_VALUE_B-BLUE_RANG || data_blue < BLUE_VALUE_B+BLUE_RANG) {
-            if (data_green > BLUE_VALUE_G-BLUE_RANG || data_red < BLUE_VALUE_G+BLUE_RANG) {
+    if (data_red > BLUE_VALUE_R - BLUE_RANG || data_red < BLUE_VALUE_R + BLUE_RANG) {
+        if (data_blue > BLUE_VALUE_B - BLUE_RANG || data_blue < BLUE_VALUE_B + BLUE_RANG) {
+            if (data_green > BLUE_VALUE_G - BLUE_RANG || data_red < BLUE_VALUE_G + BLUE_RANG) {
                 statue.nowColor = BLUE;
-                statue.bTimes+=1;
+                statue.bTimes += 1;
                 delay_ms(1000);
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -161,12 +170,12 @@ void PB1PinIntHandler(void) {
             }
         }
     }
-    
-    if (data_red > GREEN_VALUE_R-GREEN_RANG || data_red < GREEN_VALUE_R+GREEN_RANG) {
-        if (data_blue > GREEN_VALUE_B-GREEN_RANG || data_blue < GREEN_VALUE_B+GREEN_RANG) {
-            if (data_green > GREEN_VALUE_G-GREEN_RANG || data_red < GREEN_VALUE_G+GREEN_RANG) {
+
+    if (data_red > GREEN_VALUE_R - GREEN_RANG || data_red < GREEN_VALUE_R + GREEN_RANG) {
+        if (data_blue > GREEN_VALUE_B - GREEN_RANG || data_blue < GREEN_VALUE_B + GREEN_RANG) {
+            if (data_green > GREEN_VALUE_G - GREEN_RANG || data_red < GREEN_VALUE_G + GREEN_RANG) {
                 statue.nowColor = GREEN;
-                statue.gTimes+=1;
+                statue.gTimes += 1;
                 delay_ms(1000);
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -174,12 +183,12 @@ void PB1PinIntHandler(void) {
             }
         }
     }
-    
-    if (data_red > YELLOW_VALUE_R-YELLOW_RANG || data_red < YELLOW_VALUE_R+YELLOW_RANG) {
-        if (data_blue > YELLOW_VALUE_B-YELLOW_RANG || data_blue < YELLOW_VALUE_B+YELLOW_RANG) {
-            if (data_green > YELLOW_VALUE_G-YELLOW_RANG || data_red < YELLOW_VALUE_G+YELLOW_RANG) {
+
+    if (data_red > YELLOW_VALUE_R - YELLOW_RANG || data_red < YELLOW_VALUE_R + YELLOW_RANG) {
+        if (data_blue > YELLOW_VALUE_B - YELLOW_RANG || data_blue < YELLOW_VALUE_B + YELLOW_RANG) {
+            if (data_green > YELLOW_VALUE_G - YELLOW_RANG || data_red < YELLOW_VALUE_G + YELLOW_RANG) {
                 statue.nowColor = YELLOW;
-                statue.yTimes+=1;
+                statue.yTimes += 1;
                 delay_ms(1000);
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -206,43 +215,55 @@ void SW1PinIntHandler(void) {
 
 void REPinIntHandler(void) {
     // Start Interrupt
-    static int32_t d;
+    static uint32_t position;
 
     GPIOIntDisable(GPIO_PORTD_BASE, GPIO_PIN_6);
     GPIOIntClear(GPIO_PORTD_BASE, GPIO_PIN_6);
 
-    d = QEIDirectionGet(QEI0_BASE);
+    position = QEIPositionGet(QEI0_BASE);
 
-    if (d == 1) {
+    UARTprintf("Color:%d\n", statue.selectColor);
+    UARTprintf("%d %d\n", QEIPositionGet(QEI0_BASE));
+
+    if (position >= 3 && QEIDirectionGet(QEI0_BASE) == 1) {
+        QEIPositionSet(QEI0_BASE,0);
         switch (statue.selectColor) {
             case RED:
                 statue.selectColor = YELLOW;
+                break;
             case YELLOW:
                 statue.selectColor = BLUE;
+                break;
             case BLUE:
                 statue.selectColor = GREEN;
+                break;
             case GREEN:
                 statue.selectColor = RED;
+                break;
         }
-    } else {
+    } else if (position <= 94 && QEIDirectionGet(QEI0_BASE) == -1) {
+        QEIPositionSet(QEI0_BASE,0);
         switch (statue.selectColor) {
             case RED:
                 statue.selectColor = GREEN;
+                break;
             case GREEN:
                 statue.selectColor = BLUE;
+                break;
             case BLUE:
                 statue.selectColor = YELLOW;
+                break;
             case YELLOW:
                 statue.selectColor = RED;
+                break;
         }
     }
-    QEIPositionSet(QEI0_BASE, 0);
-    UARTprintf("Color:%d\n", statue.selectColor);
+//        QEIPositionSet(QEI0_BASE, 0);
 
-    delay_ms(200);
 
+
+//    QEIEnable(QEI0_BASE);
     GPIOIntEnable(GPIO_PORTD_BASE, GPIO_PIN_6);
-
 }
 
 void initInterruptPins(void) {
@@ -318,6 +339,8 @@ int main(void) {
     // Initialize color sensor module
     initColorSensor(INTEGRATIONTIME_154MS, GAIN_16X);
     clearIntColorSensor();
+
+    initRotaryEncoder();
 
     SysTickPeriodSet(SysCtlClockGet() / SYSTICKS_PER_SEC);
     SysTickEnable();
