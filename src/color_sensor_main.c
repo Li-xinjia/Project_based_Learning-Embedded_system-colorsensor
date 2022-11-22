@@ -379,6 +379,17 @@ int main(void) {
     initLCD();
     clearLCD();
 
+    delay_ms(10);
+
+    setAddressLCD(8,0);
+    writeTextLCD("R:",2);
+    setAddressLCD(12,0);
+    writeTextLCD("Y:",2);
+    setAddressLCD(8,1);
+    writeTextLCD("G:",2);
+    setAddressLCD(12,1);
+    writeTextLCD("B:",2);
+
     // Initialize color sensor module
     initColorSensor(INTEGRATIONTIME_154MS, GAIN_16X);
     clearIntColorSensor();
