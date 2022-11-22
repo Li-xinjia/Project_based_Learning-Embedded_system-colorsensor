@@ -146,11 +146,11 @@ void PB1PinIntHandler(void) {
     data_clear = read16ColorSensor(CDATAL_REG);
 
     if (data_red > RED_VALUE_R - RED_RANG && data_red < RED_VALUE_R + RED_RANG) {
-        UARTprintf("1\n");
+
         if (data_blue > RED_VALUE_B - RED_RANG && data_blue < RED_VALUE_B + RED_RANG) {
-            UARTprintf("2\n");
-            if (data_green > RED_VALUE_G - RED_RANG && data_red < RED_VALUE_G + RED_RANG) {
-                UARTprintf("3\n");
+
+            if (data_green > RED_VALUE_G - RED_RANG && data_green < RED_VALUE_G + RED_RANG) {
+
                 statue.nowColor = RED;
                 statue.rTimes += 1;
                 delay_ms(1000);
@@ -163,7 +163,7 @@ void PB1PinIntHandler(void) {
 
     if (data_red > BLUE_VALUE_R - BLUE_RANG && data_red < BLUE_VALUE_R + BLUE_RANG) {
         if (data_blue > BLUE_VALUE_B - BLUE_RANG && data_blue < BLUE_VALUE_B + BLUE_RANG) {
-            if (data_green > BLUE_VALUE_G - BLUE_RANG && data_red < BLUE_VALUE_G + BLUE_RANG) {
+            if (data_green > BLUE_VALUE_G - BLUE_RANG && data_green < BLUE_VALUE_G + BLUE_RANG) {
                 statue.nowColor = BLUE;
                 statue.bTimes += 1;
                 delay_ms(1000);
@@ -176,7 +176,7 @@ void PB1PinIntHandler(void) {
 
     if (data_red > GREEN_VALUE_R - GREEN_RANG && data_red < GREEN_VALUE_R + GREEN_RANG) {
         if (data_blue > GREEN_VALUE_B - GREEN_RANG && data_blue < GREEN_VALUE_B + GREEN_RANG) {
-            if (data_green > GREEN_VALUE_G - GREEN_RANG && data_red < GREEN_VALUE_G + GREEN_RANG) {
+            if (data_green > GREEN_VALUE_G - GREEN_RANG && data_green < GREEN_VALUE_G + GREEN_RANG) {
                 statue.nowColor = GREEN;
                 statue.gTimes += 1;
                 delay_ms(1000);
@@ -189,7 +189,7 @@ void PB1PinIntHandler(void) {
 
     if (data_red > YELLOW_VALUE_R - YELLOW_RANG && data_red < YELLOW_VALUE_R + YELLOW_RANG) {
         if (data_blue > YELLOW_VALUE_B - YELLOW_RANG && data_blue < YELLOW_VALUE_B + YELLOW_RANG) {
-            if (data_green > YELLOW_VALUE_G - YELLOW_RANG && data_red < YELLOW_VALUE_G + YELLOW_RANG) {
+            if (data_green > YELLOW_VALUE_G - YELLOW_RANG && data_green < YELLOW_VALUE_G + YELLOW_RANG) {
                 statue.nowColor = YELLOW;
                 statue.yTimes += 1;
                 delay_ms(1000);

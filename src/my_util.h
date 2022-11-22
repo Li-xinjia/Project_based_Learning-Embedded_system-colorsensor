@@ -42,7 +42,7 @@
 
 #define RED 1
 #define RED_VALUE_R 0x60BC
-#define RED_VALUE_G 0x205D
+#define RED_VALUE_G 0x245D
 #define RED_VALUE_B 0x1908
 #define RED_RANG 0x1000
 
@@ -60,7 +60,7 @@
 
 #define YELLOW 4
 #define YELLOW_VALUE_R 0x99BD
-#define YELLOW_VALUE_G 0xA96E
+#define YELLOW_VALUE_G 0xBAAB
 #define YELLOW_VALUE_B 0x3CFF
 #define YELLOW_RANG 0x1000
 
