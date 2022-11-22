@@ -41,30 +41,28 @@
 #define NONE 0;
 
 #define RED 1
-#define RED_VALUE_R //TODO: set value;
-#define RED_VALUE_G //TODO: set value;
-#define RED_VALUE_B //TODO: set value;
-#define RED_RANG //TODO: set value;
+#define RED_VALUE_R 0x60BC
+#define RED_VALUE_G 0x205D
+#define RED_VALUE_B 0x1908
+#define RED_RANG 0x1000
 
 #define GREEN 2
-#define GREEN_VALUE_R //TODO: set value;
-#define GREEN_VALUE_G //TODO: set value;
-#define GREEN_VALUE_B //TODO: set value;
-#define GREEN_RANG //TODO: set value;
+#define GREEN_VALUE_R 0x29F0
+#define GREEN_VALUE_G 0x6395
+#define GREEN_VALUE_B 0x2AB1
+#define GREEN_RANG 0x1000
 
 #define BLUE 3
-#define BLUE_VALUE_R //TODO: set value;
-#define BLUE_VALUE_G //TODO: set value;
-#define BLUE_VALUE_B //TODO: set value;
-#define BLUR_VALUE //TODO: set value;
-#define BLUE_RANG //TODO: set value;
+#define BLUE_VALUE_R 0x162F
+#define BLUE_VALUE_G 0x2526
+#define BLUE_VALUE_B 0x3E7F
+#define BLUE_RANG 0x1000
 
 #define YELLOW 4
-#define YELLOW_VALUE_R //TODO: set value;
-#define YELLOW_VALUE_G //TODO: set value;
-#define YELLOW_VALUE_B //TODO: set value;
-#define YELLOW_VALUE //TODO: set value;
-#define YELLOW_RANG //TODO: set value;
+#define YELLOW_VALUE_R 0x99BD
+#define YELLOW_VALUE_G 0xA96E
+#define YELLOW_VALUE_B 0x3CFF
+#define YELLOW_RANG 0x1000
 
 //*****************************************************************************
 // Interrupt handlers
