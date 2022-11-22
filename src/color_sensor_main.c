@@ -113,6 +113,9 @@ void SysTickIntHandler(void) {
         case YELLOW:
             writeTextLCD("YELLOW", 6);
             break;
+        case NONE:
+            writeTextLCD("NONE  ", 6);
+            break;
     }
 
     setAddressLCD(10, 0);
@@ -138,22 +141,27 @@ void PB1PinIntHandler(void) {
     static uint16_t data_red;
     static uint16_t data_blue;
     static uint16_t data_green;
-    static uint16_t data_clear;
 
     data_red = read16ColorSensor(RDATAL_REG);
     data_blue = read16ColorSensor(BDATAL_REG);
     data_green = read16ColorSensor(GDATAL_REG);
-    data_clear = read16ColorSensor(CDATAL_REG);
 
     if (data_red > RED_VALUE_R - RED_RANG && data_red < RED_VALUE_R + RED_RANG) {
-
         if (data_blue > RED_VALUE_B - RED_RANG && data_blue < RED_VALUE_B + RED_RANG) {
-
             if (data_green > RED_VALUE_G - RED_RANG && data_green < RED_VALUE_G + RED_RANG) {
-
                 statue.nowColor = RED;
-                statue.rTimes += 1;
-                delay_ms(1000);
+                if (statue.rTimes <= 99) statue.rTimes += 1;
+                if (statue.selectColor == statue.nowColor){
+                    toneBuzzer(O4A);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                } else{
+                    toneBuzzer(O4E);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                }
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
                 return;
@@ -165,8 +173,18 @@ void PB1PinIntHandler(void) {
         if (data_blue > BLUE_VALUE_B - BLUE_RANG && data_blue < BLUE_VALUE_B + BLUE_RANG) {
             if (data_green > BLUE_VALUE_G - BLUE_RANG && data_green < BLUE_VALUE_G + BLUE_RANG) {
                 statue.nowColor = BLUE;
-                statue.bTimes += 1;
-                delay_ms(1000);
+                if (statue.bTimes <= 99)statue.bTimes += 1;
+                if (statue.selectColor == statue.nowColor){
+                    toneBuzzer(O4A);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                } else{
+                    toneBuzzer(O4E);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                }
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
                 return;
@@ -178,8 +196,18 @@ void PB1PinIntHandler(void) {
         if (data_blue > GREEN_VALUE_B - GREEN_RANG && data_blue < GREEN_VALUE_B + GREEN_RANG) {
             if (data_green > GREEN_VALUE_G - GREEN_RANG && data_green < GREEN_VALUE_G + GREEN_RANG) {
                 statue.nowColor = GREEN;
-                statue.gTimes += 1;
-                delay_ms(1000);
+                if (statue.gTimes <= 99) statue.gTimes += 1;
+                if (statue.selectColor == statue.nowColor){
+                    toneBuzzer(O4A);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                } else{
+                    toneBuzzer(O4E);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                }
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
                 return;
@@ -191,8 +219,18 @@ void PB1PinIntHandler(void) {
         if (data_blue > YELLOW_VALUE_B - YELLOW_RANG && data_blue < YELLOW_VALUE_B + YELLOW_RANG) {
             if (data_green > YELLOW_VALUE_G - YELLOW_RANG && data_green < YELLOW_VALUE_G + YELLOW_RANG) {
                 statue.nowColor = YELLOW;
-                statue.yTimes += 1;
-                delay_ms(1000);
+                if (statue.yTimes <= 99) statue.yTimes += 1;
+                if (statue.selectColor == statue.nowColor){
+                    toneBuzzer(O4A);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                } else{
+                    toneBuzzer(O4E);
+                    delay_ms(500);
+                    restBuzzer();
+                    delay_ms(500);
+                }
                 clearIntColorSensor();
                 GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
                 return;
@@ -212,6 +250,11 @@ void PB1PinIntHandler(void) {
 void SW1PinIntHandler(void) {
     GPIOIntDisable(GPIO_PORTF_BASE, GPIO_PIN_4);
     GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_4);
+
+    statue.rTimes = 0;
+    statue.bTimes = 0;
+    statue.gTimes = 0;
+    statue.yTimes = 0;
 
     UARTprintf("SW1 pushed\n");
 
@@ -346,7 +389,6 @@ int main(void) {
     SysTickEnable();
     SysTickIntRegister(SysTickIntHandler);
     SysTickIntEnable();
-
 
     while (1) {
     }
