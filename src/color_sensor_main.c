@@ -146,6 +146,7 @@ void PB1PinIntHandler(void) {
     data_clear = read16ColorSensor(CDATAL_REG);
 
     if (data_red > RED_VALUE_R - RED_RANG || data_red < RED_VALUE_R + RED_RANG) {
+        UARTprintf("%04x %04x %04x\n", data_red, RED_VALUE_R - RED_RANG, RED_VALUE_R + RED_RANG);
         if (data_blue > RED_VALUE_B - RED_RANG || data_blue < RED_VALUE_B + RED_RANG) {
             if (data_green > RED_VALUE_G - RED_RANG || data_red < RED_VALUE_G + RED_RANG) {
                 statue.nowColor = RED;
@@ -226,7 +227,7 @@ void REPinIntHandler(void) {
     UARTprintf("%d %d\n", QEIPositionGet(QEI0_BASE));
 
     if (position >= 3 && QEIDirectionGet(QEI0_BASE) == 1) {
-        QEIPositionSet(QEI0_BASE,0);
+        QEIPositionSet(QEI0_BASE, 0);
         switch (statue.selectColor) {
             case RED:
                 statue.selectColor = YELLOW;
@@ -242,7 +243,7 @@ void REPinIntHandler(void) {
                 break;
         }
     } else if (position <= 94 && QEIDirectionGet(QEI0_BASE) == -1) {
-        QEIPositionSet(QEI0_BASE,0);
+        QEIPositionSet(QEI0_BASE, 0);
         switch (statue.selectColor) {
             case RED:
                 statue.selectColor = GREEN;
@@ -258,11 +259,6 @@ void REPinIntHandler(void) {
                 break;
         }
     }
-//        QEIPositionSet(QEI0_BASE, 0);
-
-
-
-//    QEIEnable(QEI0_BASE);
     GPIOIntEnable(GPIO_PORTD_BASE, GPIO_PIN_6);
 }
 
