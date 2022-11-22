@@ -38,6 +38,34 @@
 #define disableREPinInt() GPIOIntDisable(GPIO_PORTD_BASE,GPIO_INT_PIN_6)
 #define clearREPinInt()   GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6)
 
+#define NONE 0;
+
+#define RED 1
+#define RED_VALUE_R //TODO: set value;
+#define RED_VALUE_G //TODO: set value;
+#define RED_VALUE_B //TODO: set value;
+#define RED_RANG //TODO: set value;
+
+#define GREEN 2
+#define GREEN_VALUE_R //TODO: set value;
+#define GREEN_VALUE_G //TODO: set value;
+#define GREEN_VALUE_B //TODO: set value;
+#define GREEN_RANG //TODO: set value;
+
+#define BLUE 3
+#define BLUE_VALUE_R //TODO: set value;
+#define BLUE_VALUE_G //TODO: set value;
+#define BLUE_VALUE_B //TODO: set value;
+#define BLUR_VALUE //TODO: set value;
+#define BLUE_RANG //TODO: set value;
+
+#define YELLOW 4
+#define YELLOW_VALUE_R //TODO: set value;
+#define YELLOW_VALUE_G //TODO: set value;
+#define YELLOW_VALUE_B //TODO: set value;
+#define YELLOW_VALUE //TODO: set value;
+#define YELLOW_RANG //TODO: set value;
+
 //*****************************************************************************
 // Interrupt handlers
 //*****************************************************************************

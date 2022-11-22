@@ -64,3 +64,8 @@ inline void writeTextLCD(uint8_t *text, uint8_t length) {
     }
 }
 
+inline void clearLCD(void) {
+    uint8_t command[] = {SB1602_COMMAND_BURST, 0x01};
+    writeDataI2C(I2C3_BASE, SB1602_SLAVE_ADDRESS, command, 2);
+}
+

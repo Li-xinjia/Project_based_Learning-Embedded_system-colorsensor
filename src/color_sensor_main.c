@@ -41,6 +41,17 @@
 // as the example is running.
 //
 //*****************************************************************************
+
+struct Statue {
+    uint8_t selectColor;
+    uint8_t nowColor;
+    uint8_t rTimes;
+    uint8_t gTimes;
+    uint8_t bTimes;
+    uint8_t yTimes;
+} statue;
+
+
 void initConsole(void) {
     // Enable GPIO port A which is used for UART0 pins.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
@@ -58,6 +69,59 @@ void initConsole(void) {
     UARTStdioConfig(0, 9600, 16000000);
 }
 
+//*****************************************************************************
+// Event handers
+//*****************************************************************************
+
+void SysTickIntHandler(void) {
+    static uint32_t led_color = LED_ALL;
+    static uint32_t tick_count = 0;
+    if (tick_count % 16 == 0) {
+        led_color = ~led_color;
+        GPIOPinWrite(GPIO_PORTF_BASE, LED_CYAN, led_color);
+        tick_count = 0;
+    }
+
+    setAddressLCD(0, 0);
+    switch (statue.nowColor) {
+        case RED:
+            writeTextLCD("RED   ", 6);
+        case GREEN:
+            writeTextLCD("GREEN ", 6);
+        case BLUE:
+            writeTextLCD("BLUE  ", 6);
+        case YELLOW:
+            writeTextLCD("YELLOW", 6);
+    }
+
+    setAddressLCD(0, 1);
+    switch (statue.nowColor) {
+        case RED:
+            writeTextLCD("RED   ", 6);
+        case GREEN:
+            writeTextLCD("GREEN ", 6);
+        case BLUE:
+            writeTextLCD("BLUE  ", 6);
+        case YELLOW:
+            writeTextLCD("YELLOW", 6);
+    }
+
+    setAddressLCD(10,0);
+    writeTextLCD(itoa(statue.rTimes,2),2);
+
+    setAddressLCD(14,0);
+    writeTextLCD(itoa(statue.yTimes,2),2);
+
+    setAddressLCD(10,1);
+    writeTextLCD(itoa(statue.gTimes,2),2);
+
+    setAddressLCD(14,1);
+    writeTextLCD(itoa(statue.bTimes,2),2);
+
+    tick_count++;
+}
+
+
 void PB1PinIntHandler(void) {
     GPIOIntDisable(GPIO_PORTB_BASE, GPIO_PIN_0);
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -67,35 +131,118 @@ void PB1PinIntHandler(void) {
     static uint16_t data_green;
     static uint16_t data_clear;
 
-    setAddressLCD(0, 0);
-    writeTextLCD("R:", 2);
     data_red = read16ColorSensor(RDATAL_REG);
-    setAddressLCD(2, 0);
-    writeTextLCD(itoh(data_red, 4), 4);
-
-    setAddressLCD(7, 0);
-    writeTextLCD("B:", 2);
     data_blue = read16ColorSensor(BDATAL_REG);
-    setAddressLCD(9, 0);
-    writeTextLCD(itoh(data_blue, 4), 4);
-
-    setAddressLCD(0, 1);
-    writeTextLCD("G:", 2);
     data_green = read16ColorSensor(GDATAL_REG);
-    setAddressLCD(2, 1);
-    writeTextLCD(itoh(data_green, 4), 4);
-
-    setAddressLCD(7, 1);
-    writeTextLCD("C:", 2);
     data_clear = read16ColorSensor(CDATAL_REG);
-    setAddressLCD(9, 1);
-    writeTextLCD(itoh(data_clear, 4), 4);
 
-//    UARTprintf("PB1 interrupt\n");
+    if (data_red > RED_VALUE_R-RED_RANG || data_red < RED_VALUE_R+RED_RANG) {
+        if (data_blue > RED_VALUE_B-RED_RANG || data_blue < RED_VALUE_B+RED_RANG) {
+            if (data_green > RED_VALUE_G-RED_RANG || data_red < RED_VALUE_G+RED_RANG) {
+                statue.nowColor = RED;
+                statue.rTimes+=1;
+                delay_ms(1000);
+                clearIntColorSensor();
+                GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
+                return;
+            }
+        }
+    }
+
+    if (data_red > BLUE_VALUE_R-BLUE_RANG || data_red < BLUE_VALUE_R+BLUE_RANG) {
+        if (data_blue > BLUE_VALUE_B-BLUE_RANG || data_blue < BLUE_VALUE_B+BLUE_RANG) {
+            if (data_green > BLUE_VALUE_G-BLUE_RANG || data_red < BLUE_VALUE_G+BLUE_RANG) {
+                statue.nowColor = BLUE;
+                statue.bTimes+=1;
+                delay_ms(1000);
+                clearIntColorSensor();
+                GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
+                return;
+            }
+        }
+    }
+    
+    if (data_red > GREEN_VALUE_R-GREEN_RANG || data_red < GREEN_VALUE_R+GREEN_RANG) {
+        if (data_blue > GREEN_VALUE_B-GREEN_RANG || data_blue < GREEN_VALUE_B+GREEN_RANG) {
+            if (data_green > GREEN_VALUE_G-GREEN_RANG || data_red < GREEN_VALUE_G+GREEN_RANG) {
+                statue.nowColor = GREEN;
+                statue.gTimes+=1;
+                delay_ms(1000);
+                clearIntColorSensor();
+                GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
+                return;
+            }
+        }
+    }
+    
+    if (data_red > YELLOW_VALUE_R-YELLOW_RANG || data_red < YELLOW_VALUE_R+YELLOW_RANG) {
+        if (data_blue > YELLOW_VALUE_B-YELLOW_RANG || data_blue < YELLOW_VALUE_B+YELLOW_RANG) {
+            if (data_green > YELLOW_VALUE_G-YELLOW_RANG || data_red < YELLOW_VALUE_G+YELLOW_RANG) {
+                statue.nowColor = YELLOW;
+                statue.yTimes+=1;
+                delay_ms(1000);
+                clearIntColorSensor();
+                GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
+                return;
+            }
+        }
+    }
+
+    statue.nowColor = NONE;
     clearIntColorSensor();
 
     delay_ms(100);
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
+}
+
+void SW1PinIntHandler(void) {
+    GPIOIntDisable(GPIO_PORTF_BASE, GPIO_PIN_4);
+    GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_4);
+
+    UARTprintf("SW1 pushed\n");
+
+    GPIOIntEnable(GPIO_PORTF_BASE, GPIO_PIN_4);
+}
+
+void REPinIntHandler(void) {
+    // Start Interrupt
+    static int32_t d;
+
+    GPIOIntDisable(GPIO_PORTD_BASE, GPIO_PIN_6);
+    GPIOIntClear(GPIO_PORTD_BASE, GPIO_PIN_6);
+
+    d = QEIDirectionGet(QEI0_BASE);
+
+    if (d == 1) {
+        switch (statue.selectColor) {
+            case RED:
+                statue.selectColor = YELLOW;
+            case YELLOW:
+                statue.selectColor = BLUE;
+            case BLUE:
+                statue.selectColor = GREEN;
+            case GREEN:
+                statue.selectColor = RED;
+        }
+    } else {
+        switch (statue.selectColor) {
+            case RED:
+                statue.selectColor = GREEN;
+            case GREEN:
+                statue.selectColor = BLUE;
+            case BLUE:
+                statue.selectColor = YELLOW;
+            case YELLOW:
+                statue.selectColor = RED;
+        }
+    }
+    QEIPositionSet(QEI0_BASE, 0);
+    UARTprintf("Color:%d\n", statue.selectColor);
+
+    delay_ms(200);
+
+    GPIOIntEnable(GPIO_PORTD_BASE, GPIO_PIN_6);
+
 }
 
 void initInterruptPins(void) {
@@ -111,22 +258,27 @@ void initInterruptPins(void) {
                    GPIO_FALLING_EDGE);
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0);
 
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    // Set SW1 as an interrupt
+    GPIOIntRegister(GPIO_PORTF_BASE, SW1PinIntHandler);
+    // Make pins 4 falling-edge triggered interrupts.
+    GPIOIntTypeSet(GPIO_PORTF_BASE, GPIO_INT_PIN_4, GPIO_FALLING_EDGE);
+    // PF4 pull-up
+    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+
+    GPIOIntEnable(GPIO_PORTF_BASE, GPIO_INT_PIN_4);
+
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    // Watch QEI as an interrupt
+    GPIOIntRegister(GPIO_PORTD_BASE, REPinIntHandler);
+    // Make pins PD6 falling-edge triggered interrupts.
+    GPIOIntTypeSet(GPIO_PORTD_BASE, GPIO_INT_PIN_6, GPIO_BOTH_EDGES);
+    // (PD6 is physically pulled-up)
+
+    GPIOIntEnable(GPIO_PORTD_BASE, GPIO_INT_PIN_6);
+
     UARTprintf("Interrupt pins initiate over\n");
-}
-
-//*****************************************************************************
-// Event handers
-//*****************************************************************************
-
-void SysTickIntHandler(void) {
-    static uint32_t led_color = LED_ALL;
-    static uint32_t tick_count = 0;
-    if (tick_count % 16 == 0) {
-        led_color = ~led_color;
-        GPIOPinWrite(GPIO_PORTF_BASE, LED_CYAN, led_color);
-        tick_count = 0;
-    }
-    tick_count++;
 }
 
 
@@ -134,6 +286,15 @@ int main(void) {
     // Set the clocking to run directly from the crystal.
     ROM_SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |
                        SYSCTL_XTAL_16MHZ);
+
+    // Initialize statue
+    statue.nowColor = NONE;
+    statue.selectColor = RED;
+    statue.rTimes = 0;
+    statue.gTimes = 0;
+    statue.bTimes = 0;
+    statue.yTimes = 0;
+
     // Set up ports hardware (see periphConf.c)
     PortFunctionInit();
 
@@ -149,8 +310,11 @@ int main(void) {
 
     // Initialize two I2C Masters
     initI2C(I2C3_BASE);
+
     // Initialize LCD module
     initLCD();
+    clearLCD();
+
     // Initialize color sensor module
     initColorSensor(INTEGRATIONTIME_154MS, GAIN_16X);
     clearIntColorSensor();
@@ -160,15 +324,7 @@ int main(void) {
     SysTickIntRegister(SysTickIntHandler);
     SysTickIntEnable();
 
-//    setAddressLCD(0, 0);
-//    writeTextLCD("CLEAR DATA:", 11);
-
 
     while (1) {
-        // Warning: you do not leave the contents here.
-//        data_clear = read16ColorSensor(CDATAL_REG);
-//        setAddressLCD(11, 0);
-//        writeTextLCD(itoh(data_clear, 4), 4);
-//        delay_ms(100);
     }
 }

@@ -42,4 +42,6 @@ extern inline void setAddressLCD(uint8_t x, uint8_t y);
 //*****************************************************************************
 extern inline void writeTextLCD(uint8_t *text, uint8_t length);
 
+extern inline void clearLCD(void);
+
 #endif /* LCD_SB1602_H_ */

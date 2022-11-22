@@ -28,11 +28,13 @@ void initBuzzer(void) {
 }
 
 void toneBuzzer(int tone) {
-
+    PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, tone);
+    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_3, tone/2);
+    PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, true);
 }
 
 void restBuzzer() {
-
+    PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, false);
 }
 
 
