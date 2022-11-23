@@ -70,19 +70,46 @@ void initConsole(void) {
     UARTStdioConfig(0, 9600, 16000000);
 }
 
+void initLEDPWM() {
+    // For LED
+    // Configure the PWM1 to count up/down without synchronization.
+    PWMGenConfigure(PWM1_BASE, PWM_GEN_2, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+    PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+
+    // Set PWM period (10ms * PWMClock=10000)
+    PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 1600);
+    PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 1600);
+
+    // Set the PWM pulse width.
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, 0); // R
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, 0); // B
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, 0); // G
+
+    // Permit to output PWM to pins.
+    PWMOutputState(PWM1_BASE, PWM_OUT_5_BIT, true);
+    PWMOutputState(PWM1_BASE, PWM_OUT_6_BIT, true);
+    PWMOutputState(PWM1_BASE, PWM_OUT_7_BIT, true);
+
+    // Enable the PWM generator block.
+    PWMGenEnable(PWM1_BASE, PWM_GEN_2);
+    PWMGenEnable(PWM1_BASE, PWM_GEN_3);
+}
+
+void setRPG(uint32_t R, uint32_t B, uint32_t G) {
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, R); // R
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, B); // B
+    PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, G); // G
+
+//    PWMOutputState(PWM1_BASE, PWM_OUT_5_BIT, true);
+//    PWMOutputState(PWM1_BASE, PWM_OUT_6_BIT, true);
+//    PWMOutputState(PWM1_BASE, PWM_OUT_7_BIT, true);
+}
+
 //*****************************************************************************
 // Event handers
 //*****************************************************************************
 
 void SysTickIntHandler(void) {
-    static uint32_t led_color = LED_ALL;
-    static uint32_t tick_count = 0;
-    if (tick_count % 16 == 0) {
-        led_color = ~led_color;
-        GPIOPinWrite(GPIO_PORTF_BASE, LED_CYAN, led_color);
-        tick_count = 0;
-    }
-
     setAddressLCD(0, 0);
     switch (statue.selectColor) {
         case RED:
@@ -129,8 +156,6 @@ void SysTickIntHandler(void) {
 
     setAddressLCD(14, 1);
     writeTextLCD(itoa(statue.bTimes, 2), 2);
-
-    tick_count++;
 }
 
 
@@ -141,22 +166,29 @@ void PB1PinIntHandler(void) {
     static uint16_t data_red;
     static uint16_t data_blue;
     static uint16_t data_green;
+    static float r_p, b_p, g_p;
 
     data_red = read16ColorSensor(RDATAL_REG);
     data_blue = read16ColorSensor(BDATAL_REG);
     data_green = read16ColorSensor(GDATAL_REG);
+
+    r_p = (float) data_red / 0xFFFF;
+    b_p = (float) data_blue / 0xFFFF;
+    g_p = (float) data_green / 0xFFFF;
+
+    setRPG((uint32_t)(r_p * 1600), (uint32_t)(b_p * 1600), (uint32_t)(g_p * 1600));
 
     if (data_red > RED_VALUE_R - RED_RANG && data_red < RED_VALUE_R + RED_RANG) {
         if (data_blue > RED_VALUE_B - RED_RANG && data_blue < RED_VALUE_B + RED_RANG) {
             if (data_green > RED_VALUE_G - RED_RANG && data_green < RED_VALUE_G + RED_RANG) {
                 statue.nowColor = RED;
                 if (statue.rTimes <= 99) statue.rTimes += 1;
-                if (statue.selectColor == statue.nowColor){
+                if (statue.selectColor == statue.nowColor) {
                     toneBuzzer(O4A);
                     delay_ms(500);
                     restBuzzer();
                     delay_ms(500);
-                } else{
+                } else {
                     toneBuzzer(O4E);
                     delay_ms(500);
                     restBuzzer();
@@ -174,12 +206,12 @@ void PB1PinIntHandler(void) {
             if (data_green > BLUE_VALUE_G - BLUE_RANG && data_green < BLUE_VALUE_G + BLUE_RANG) {
                 statue.nowColor = BLUE;
                 if (statue.bTimes <= 99)statue.bTimes += 1;
-                if (statue.selectColor == statue.nowColor){
+                if (statue.selectColor == statue.nowColor) {
                     toneBuzzer(O4A);
                     delay_ms(500);
                     restBuzzer();
                     delay_ms(500);
-                } else{
+                } else {
                     toneBuzzer(O4E);
                     delay_ms(500);
                     restBuzzer();
@@ -197,12 +229,12 @@ void PB1PinIntHandler(void) {
             if (data_green > GREEN_VALUE_G - GREEN_RANG && data_green < GREEN_VALUE_G + GREEN_RANG) {
                 statue.nowColor = GREEN;
                 if (statue.gTimes <= 99) statue.gTimes += 1;
-                if (statue.selectColor == statue.nowColor){
+                if (statue.selectColor == statue.nowColor) {
                     toneBuzzer(O4A);
                     delay_ms(500);
                     restBuzzer();
                     delay_ms(500);
-                } else{
+                } else {
                     toneBuzzer(O4E);
                     delay_ms(500);
                     restBuzzer();
@@ -220,12 +252,12 @@ void PB1PinIntHandler(void) {
             if (data_green > YELLOW_VALUE_G - YELLOW_RANG && data_green < YELLOW_VALUE_G + YELLOW_RANG) {
                 statue.nowColor = YELLOW;
                 if (statue.yTimes <= 99) statue.yTimes += 1;
-                if (statue.selectColor == statue.nowColor){
+                if (statue.selectColor == statue.nowColor) {
                     toneBuzzer(O4A);
                     delay_ms(500);
                     restBuzzer();
                     delay_ms(500);
-                } else{
+                } else {
                     toneBuzzer(O4E);
                     delay_ms(500);
                     restBuzzer();
@@ -369,6 +401,9 @@ int main(void) {
     // Set up interrupts (you can specify GPIO interrupt initialization here)
     initInterruptPins();
 
+    // Initialize PWM LED
+    initLEDPWM();
+
     // Initialize buzzer
     initBuzzer();
 
@@ -381,14 +416,14 @@ int main(void) {
 
     delay_ms(10);
 
-    setAddressLCD(8,0);
-    writeTextLCD("R:",2);
-    setAddressLCD(12,0);
-    writeTextLCD("Y:",2);
-    setAddressLCD(8,1);
-    writeTextLCD("G:",2);
-    setAddressLCD(12,1);
-    writeTextLCD("B:",2);
+    setAddressLCD(8, 0);
+    writeTextLCD("R:", 2);
+    setAddressLCD(12, 0);
+    writeTextLCD("Y:", 2);
+    setAddressLCD(8, 1);
+    writeTextLCD("G:", 2);
+    setAddressLCD(12, 1);
+    writeTextLCD("B:", 2);
 
     // Initialize color sensor module
     initColorSensor(INTEGRATIONTIME_154MS, GAIN_16X);
